@@ -25,29 +25,99 @@
         var year  = today.getFullYear();
         var month = today.getMonth() + 1;
         // 当月の最終日
-        var lastDate = new Date(year, month, 0).getDate();
+        var lastDate  = new Date(year, month, 0).getDate();
         // 当月初日の曜日
         var firstWday = new Date(year + "-" + month + "-01").getDay();
         // 当月最終日の曜日
-        var lastWday = new Date(year + "-" + month + "-" + lastDate).getDay();
+        var lastWday  = new Date(year + "-" + month + "-" + lastDate).getDay();
 
         // 出力用
         var wdaystr = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-        var table = document.getElementById("calendar");
+        var table   = document.getElementById("calendar");
 
         // タイトルの出力
         function printTitle(year, month) {
-            var title = year + "年" + month + "月";
+            var title     = year + "年" + month + "月";
             var htmlTitle = document.getElementById("title");
             htmlTitle.innerHTML = "<p>" + title + "</p>";
         }
 
         // カレンダーヘッダの出力
         function printCalendarHead(table, wdaystr) {
-            //
+            // trタグの生成
+            var tr    = document.createElement("tr");
+            var thead = table.appendChild(tr);
+            thead.setAttribute("id", "thead");
+            var wdayrow = document.getElementById("thead");
+            for (key in wdaystr) {
+                // 曜日部分の出力
+                var td = document.createElement("td");
+                td.textContent = wdaystr[key];
+                var wdaytd = wdayrow.appendChild(td);
+                if (wdaystr[key] === "SUN") {
+                    // 日曜日を赤色にする
+                    wdaytd.setAttribute("class", "sun");
+                }
+                if (wdaystr[key] === "SAT") {
+                    // 土曜日を青色にする
+                    wdaytd.setAttribute("class", "sat");
+                }
+            }
+        }
+
+        // カレンダーメインの出力
+        function printCalendarMain(table, firstWday, lastDate, lastWday) {
+            var tdArray = [];
+            for (var i = 0; i < firstWday; i++) {
+                tdArray.push(""); // 月初の空白
+            }
+            for (var i = 1; i < lastDate + 1; i++) {
+                tdArray.push(i); // 日付
+            }
+            for (var i = 0; i < 6 - lastWday; i++) {
+                tdArray.push(""); // 月末の空白
+            }
+            // 週別に配列に格納
+            var arrayLeng = tdArray.length;
+            var countline = arrayLeng / 7; // 週の数
+            var trArray   = [];
+            var start     = 0;
+            var end       = 7;
+            var num       = 2;
+            for (var i = 0; i < countline; i++) {
+                var elements = tdArray.slice(start, end);
+                trArray.push(elements);
+                start = end;
+                end   = 7 * num;
+                num  += 1;
+            }
+
+            // 出力
+            for (key in trArray) {
+                // trタグの生成
+                var trElem = document.createElement("tr");
+                var tr     = table.appendChild(trElem);
+                var array  = trArray[key];
+                // tdタグの生成
+                for (key in array) {
+                    var tdElem = document.createElement("td");
+                    var td     = tr.appendChild(tdElem);
+                    td.textContent = array[key];
+                    if (key == 0) {
+                        // 日曜を赤色にする
+                        td.setAttribute("class", "sun");
+                    }
+                    if (key == 6) {
+                        // 土曜を青色にする
+                        td.setAttribute("class", "sat");
+                    }
+                }
+            }
         }
 
         printTitle(year, month);
+        printCalendarHead(table, wdaystr);
+        printCalendarMain(table, firstWday, lastDate, lastWday)
     </script>
 </body>
 </html>
